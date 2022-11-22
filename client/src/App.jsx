@@ -5,14 +5,15 @@ import Cookies from "universal-cookie";
 
 
 import './Styles/App.css';
+const cookies = new Cookies();
 import { GroupContainer, GroupListContainer, Auth } from "./Components";
 
 const apikey = 'tr7y6szxcqbd';
 const client = StreamChat.getInstance(apikey);
-const authToken = false;
+const authToken = cookies.get("token");
 
 const App = () => {
-  if(!authToken) return <Auth />
+  if (!authToken) return <Auth />
   return (
     <div className="app__wrapper">
       {/* <h1>Chat Application</h1> */}

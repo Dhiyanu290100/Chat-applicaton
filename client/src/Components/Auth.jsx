@@ -4,9 +4,45 @@ import axios from 'axios';
 
 import signinImage from '../assets/signup.jpg'
 
+const cookies = new Cookies();
+
+const initialAtate = {
+    fullName: '',
+    username: '',
+    password: '',
+    confirmPassword: '',
+    phoneNumber: '',
+    avatarURL: '',
+}
 const Auth = () => {
+    const [form, setForm] = useState();
     const [isSignup, setisSignup] = useState(true);
-    const handleChange = () => { }
+    const handleChange = (e) => {
+        setForm({ ...form, [e.target.name]: e.target.value });
+
+
+    }
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        const { fullName, username, password, phoneNumber, avatarURL } = form;
+        const URL = 'http://localhost:5000/auth';
+        const { data: { token, userId, hashedPassword } } = await axios.post(`${URL}/${isSignup ? 'signup' : 'login'}`, { username, password, fullName, phoneNumber, avatarURL });
+        Cookies.set('token', token);
+        Cookies.set('username', username);
+        Cookies.set('fullName', fullName);
+        Cookies.set('userId', userId);
+
+        if (isSignup) {
+            Cookies.set('phoneNumber', phoneNumber);
+            Cookies.set('avatarURL', avatarURL);
+            Cookies.set('hashedPassword', hashedPassword);
+
+        }
+
+        window.location.reload();
+
+
+    }
     const switchMode = () => {
         setisSignup((prevIsSignup) => !prevIsSignup);
     }
@@ -15,7 +51,7 @@ const Auth = () => {
             <div className="auth__form-container_fields">
                 <div className="auth__form-container_fields-content">
                     <p>{isSignup ? 'sign Up' : 'Sign In'}</p>
-                    <form onSubmit={() => { }}>
+                    <form onSubmit={handleSubmit}>
                         {isSignup && (
                             <div className="auth__form-container_fields-content_input">
                                 <label htmlFor="fullName">Full Name</label>
@@ -86,6 +122,9 @@ const Auth = () => {
                         )}
 
 
+                        <div className="auth__form-container_fields-content_button">
+                            <button> {isSignup ? "Sign UP" : "Sign In"}</button>
+                        </div>
 
                     </form>
 
